@@ -1,11 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+// import '@fontsource/roboto'
 import { Provider } from 'react-redux'
 
 import App from './components/App'
 import { store } from './state/store'
-
-// ReactDOM.render(<App />, document.getElementById('root'))
 
 ReactDOM.render(
   <Provider store={store}>
@@ -15,12 +14,12 @@ ReactDOM.render(
 )
 
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-explicit-any */
-// declare let module: { hot: any }
+declare let module: { hot: any }
 
-// if (module.hot) {
-//   module.hot.accept('./components/App', () => {
-//     const NewApp = require('./components/App').default
+if (module.hot) {
+  module.hot.accept('./components/App', () => {
+    const NewApp = require('./components/App').default
 
-//     ReactDOM.render(<NewApp />, document.getElementById('root'))
-//   })
-// }
+    ReactDOM.render(<NewApp />, document.getElementById('root'))
+  })
+}
