@@ -2,11 +2,17 @@ import styled from '@emotion/styled'
 import { Button, Checkbox, IconButton, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { DeleteOutlined, EditOutlined } from '@mui/icons-material'
-import React, { useState } from 'react'
+import React from 'react'
 import { ShoppingItem } from '../state/types'
+import { useAppDispatch } from '../state/reduxhooks'
+import { togglePurchaseState } from '../state/store'
+import { lightBlue } from '@mui/material/colors'
 
 interface ShoppingListItemsProps {
   items: ShoppingItem[]
+  addItemHandler: () => void
+  editClickHandler: (item: ShoppingItem) => void
+  deleteItemClickHandler: (item: ShoppingItem) => void
 }
 
 const Wrapper = styled.div`
@@ -33,7 +39,7 @@ const ContainerItem = styled.div<{ done?: boolean }>`
 `
 
 export const ShoppingListItems = (props: ShoppingListItemsProps) => {
-  const [activeShoppingItem, setActiveShoppingItem] = useState<ShoppingItem>()
+  const dispatch = useAppDispatch()
 
   return (
     <Wrapper>
@@ -45,28 +51,64 @@ export const ShoppingListItems = (props: ShoppingListItemsProps) => {
         }}
       >
         <Typography sx={{ fontWeight: 500 }}>Your Items</Typography>
-        <Button variant="contained" sx={{ textTransform: 'capitalize' }}>
+        <Button variant="contained" onClick={props.addItemHandler}>
           Add Item
         </Button>
       </Box>
       <ItemsUl>
-        <ItemLi>
-          <ContainerItem>
-            <Checkbox sx={{ mr: 1 }} />
-            <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-              <Typography fontWeight={500}>Tomatoes</Typography>
-              <Typography fontWeight={400} fontSize=".9em">
-                Green cherry tomatoes
-              </Typography>
-            </Box>
-            <IconButton>
-              <EditOutlined />
-            </IconButton>
-            <IconButton>
-              <DeleteOutlined />
-            </IconButton>
-          </ContainerItem>
-        </ItemLi>
+        {props.items.length > 0 &&
+          props.items.map((item) => (
+            <ItemLi key={item.id}>
+              <ContainerItem done={item.purchased}>
+                <Checkbox
+                  sx={{ mr: 1 }}
+                  checked={item.purchased}
+                  onClick={() => {
+                    dispatch(togglePurchaseState(item.id))
+                  }}
+                />
+                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <Typography
+                    fontWeight={500}
+                    color={lightBlue[800]}
+                    sx={{
+                      textDecoration: item.purchased
+                        ? 'line-through'
+                        : 'initial',
+                    }}
+                  >
+                    {item.name}
+                  </Typography>
+                  <Typography
+                    fontWeight={400}
+                    fontSize=".9em"
+                    color="GrayText"
+                    sx={{
+                      textDecoration: item.purchased
+                        ? 'line-through'
+                        : 'initial',
+                    }}
+                  >
+                    {item.description}
+                  </Typography>
+                </Box>
+                <IconButton
+                  onClick={() => {
+                    props.editClickHandler(item)
+                  }}
+                >
+                  <EditOutlined />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    props.deleteItemClickHandler(item)
+                  }}
+                >
+                  <DeleteOutlined />
+                </IconButton>
+              </ContainerItem>
+            </ItemLi>
+          ))}
       </ItemsUl>
     </Wrapper>
   )

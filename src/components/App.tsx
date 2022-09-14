@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import { AppBar, Button, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import { useAppSelector } from '../state/reduxhooks'
+import { ShoppingItem } from '../state/types'
 import { AddEditDailog } from './AddEditDialog'
 import './App.scss'
 import { DeletePromptDialog } from './DeletePromptDialog'
@@ -36,6 +38,27 @@ const ContainerMain = styled.main`
 `
 
 export default function App() {
+  const [activeShoppingItem, setActiveShoppingItem] = useState<ShoppingItem>()
+  const [showAddEditDialog, setShowAddEditDialog] = useState(false)
+  const [showDeletePromptDialog, setShowDeletePromptDialog] = useState(false)
+  const shoppingItems = useAppSelector((state) => state.shopping.items)
+  const loading = useAppSelector((state) => state.appState.loading)
+
+  const addItemPromptShowHandler = () => {
+    setActiveShoppingItem(undefined)
+    setShowAddEditDialog(true)
+  }
+
+  const editClickHandler = (item: ShoppingItem) => {
+    setActiveShoppingItem(item)
+    setShowAddEditDialog(true)
+  }
+
+  const deleteItemClickHandler = (item: ShoppingItem) => {
+    setActiveShoppingItem(item)
+    setShowDeletePromptDialog(true)
+  }
+
   return (
     <WrapperTop>
       <AppBar position="static" sx={{ px: 3, py: 2 }}>
@@ -50,15 +73,41 @@ export default function App() {
         </Typography>
       </AppBar>
       <ContainerMain>
-        <ContainerNoItems>
-          <ContainerNoItemsPrompt>
-            <Typography sx={{ mb: 2 }}>
-              Your shopping list is empty :(
-            </Typography>
-            <Button variant="contained">Add your first item</Button>
-          </ContainerNoItemsPrompt>
-        </ContainerNoItems>
+        {shoppingItems.length === 0 ? (
+          <ContainerNoItems>
+            <ContainerNoItemsPrompt>
+              <Typography sx={{ mb: 2 }}>
+                Your shopping list is empty :(
+              </Typography>
+              <Button variant="contained" onClick={addItemPromptShowHandler}>
+                Add your first item
+              </Button>
+            </ContainerNoItemsPrompt>
+          </ContainerNoItems>
+        ) : (
+          <ShoppingListItems
+            items={shoppingItems}
+            addItemHandler={addItemPromptShowHandler}
+            editClickHandler={editClickHandler}
+            deleteItemClickHandler={deleteItemClickHandler}
+          />
+        )}
       </ContainerMain>
+      {showAddEditDialog && (
+        <AddEditDailog
+          shoppingItem={activeShoppingItem}
+          open={showAddEditDialog}
+          closeDialogHandler={() => setShowAddEditDialog(false)}
+        />
+      )}
+      {activeShoppingItem && (
+        <DeletePromptDialog
+          open={showDeletePromptDialog}
+          deleteId={activeShoppingItem!.id}
+          cancelClickHandler={() => setShowDeletePromptDialog(false)}
+        />
+      )}
+      {loading === 'ACTIVE' && <Loading />}
     </WrapperTop>
   )
 }

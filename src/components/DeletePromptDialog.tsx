@@ -8,18 +8,28 @@ import {
   Typography,
 } from '@mui/material'
 import React from 'react'
+import { useAppDispatch } from '../state/reduxhooks'
+import { deleteShoppingItem } from '../state/store'
 import { ShoppingItem } from '../state/types'
 
 interface DeletePromptDialogProps extends DialogProps {
   deleteId: ShoppingItem['id']
+  cancelClickHandler: () => void
 }
 
 export const DeletePromptDialog = (props: DeletePromptDialogProps) => {
-  const { deleteId, ...rest } = props
+  const { deleteId, cancelClickHandler, ...rest } = props
+  const dispatch = useAppDispatch()
+
   const baseProps: DialogProps = {
     maxWidth: 'xs',
     fullWidth: true,
     ...rest,
+  }
+
+  const confirmDeleteHandler = () => {
+    dispatch(deleteShoppingItem(deleteId))
+    cancelClickHandler()
   }
 
   return (
@@ -38,8 +48,10 @@ export const DeletePromptDialog = (props: DeletePromptDialogProps) => {
         </Typography>
       </DialogContent>
       <DialogActions sx={{ pt: 5, pb: 2, px: 3 }}>
-        <Button>Cancel</Button>
-        <Button variant="contained">Delete</Button>
+        <Button onClick={cancelClickHandler}>Cancel</Button>
+        <Button variant="contained" onClick={confirmDeleteHandler}>
+          Delete
+        </Button>
       </DialogActions>
     </Dialog>
   )
