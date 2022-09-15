@@ -25,9 +25,9 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const item = {
-    id: guid(),
     ...req.body,
   }
+  item.id = guid()
   items.push(item)
   res.json(item)
 })

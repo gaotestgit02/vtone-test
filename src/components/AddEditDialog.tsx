@@ -24,7 +24,8 @@ interface AddEditDialogProps extends DialogProps {
   closeDialogHandler: () => void
 }
 
-const DEFAULT_SHOPPINGITEM: Partial<ShoppingItem> = {
+const DEFAULT_SHOPPINGITEM: ShoppingItem = {
+  id: '',
   name: '',
   description: '',
   quantity: '',
@@ -42,10 +43,10 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
 
   const editMode = shoppingItem.id !== undefined
   const [hasError, setHasError] = useState(false)
-  const [itemName, setItemName] = useState(shoppingItem.name ?? '')
-  const [description, setDescription] = useState(shoppingItem.description ?? '')
-  const [quantity, setQuantity] = useState(shoppingItem.quantity ?? '')
-  const [purchased, setPurchased] = useState(shoppingItem.purchased ?? false)
+  const [itemName, setItemName] = useState(shoppingItem.name)
+  const [description, setDescription] = useState(shoppingItem.description)
+  const [quantity, setQuantity] = useState(shoppingItem.quantity)
+  const [purchased, setPurchased] = useState(shoppingItem.purchased)
 
   const saveHandler = () => {
     setHasError(false)
@@ -65,7 +66,7 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
       setHasError(true)
       return
     }
-
+    console.log(shoppingItem)
     // dispatch(
     //   !shoppingItem.id
     //     ? addShoppingItem(newShoppingItem)
