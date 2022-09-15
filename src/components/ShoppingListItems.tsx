@@ -5,8 +5,8 @@ import { DeleteOutlined, EditOutlined } from '@mui/icons-material'
 import React from 'react'
 import { ShoppingItem } from '../state/types'
 import { useAppDispatch } from '../state/reduxhooks'
-import { togglePurchaseState } from '../state/store'
 import { lightBlue } from '@mui/material/colors'
+import { sagaActions } from '../state/sagaActions'
 
 interface ShoppingListItemsProps {
   items: ShoppingItem[]
@@ -64,7 +64,13 @@ export const ShoppingListItems = (props: ShoppingListItemsProps) => {
                   sx={{ mr: 1 }}
                   checked={item.purchased}
                   onClick={() => {
-                    dispatch(togglePurchaseState(item.id))
+                    dispatch({
+                      type: sagaActions.EDIT_SHOPPING_ITEM,
+                      payload: {
+                        ...item,
+                        purchased: !item.purchased,
+                      },
+                    })
                   }}
                 />
                 <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>

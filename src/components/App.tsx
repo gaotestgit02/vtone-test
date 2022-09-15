@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import { AppBar, Button, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { useAppSelector } from '../state/reduxhooks'
+import React, { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../state/reduxhooks'
+import { sagaActions } from '../state/sagaActions'
 import { ShoppingItem } from '../state/types'
 import { AddEditDailog } from './AddEditDialog'
 import './App.scss'
@@ -43,6 +44,7 @@ export default function App() {
   const [showDeletePromptDialog, setShowDeletePromptDialog] = useState(false)
   const shoppingItems = useAppSelector((state) => state.shopping.items)
   const loading = useAppSelector((state) => state.appState.loading)
+  const dispatch = useAppDispatch()
 
   const addItemPromptShowHandler = () => {
     setActiveShoppingItem(undefined)
@@ -59,6 +61,10 @@ export default function App() {
     setShowDeletePromptDialog(true)
   }
 
+  useEffect(() => {
+    dispatch({ type: sagaActions.FETCH_SHOPPING_ITEMS })
+  }, [dispatch])
+
   return (
     <WrapperTop>
       <AppBar position="static" sx={{ px: 3, py: 2 }}>
@@ -73,7 +79,7 @@ export default function App() {
         </Typography>
       </AppBar>
       <ContainerMain>
-        {shoppingItems.length === 0 ? (
+        {shoppingItems.length === 0 && loading === 'IDLE' && (
           <ContainerNoItems>
             <ContainerNoItemsPrompt>
               <Typography sx={{ mb: 2 }}>
@@ -84,7 +90,8 @@ export default function App() {
               </Button>
             </ContainerNoItemsPrompt>
           </ContainerNoItems>
-        ) : (
+        )}
+        {shoppingItems.length > 0 && (
           <ShoppingListItems
             items={shoppingItems}
             addItemHandler={addItemPromptShowHandler}

@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { useAppDispatch } from '../state/reduxhooks'
-import { deleteShoppingItem } from '../state/store'
+import { sagaActions } from '../state/sagaActions'
 import { ShoppingItem } from '../state/types'
 
 interface DeletePromptDialogProps extends DialogProps {
@@ -28,7 +28,7 @@ export const DeletePromptDialog = (props: DeletePromptDialogProps) => {
   }
 
   const confirmDeleteHandler = () => {
-    dispatch(deleteShoppingItem(deleteId))
+    dispatch({ type: sagaActions.DELETE_SHOPPING_ITEM, payload: deleteId })
     cancelClickHandler()
   }
 

@@ -5,6 +5,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware')
 const config = require('./webpack.config.dev.js')
 const path = require('path')
 const cors = require('cors')
+const { shoppingItemsRouter } = require('./backendRoutes/shoppingitems.js')
 // const request = require('request')
 const app = express()
 app.use(cors())
@@ -28,10 +29,7 @@ app.use(
   })
 )
 
-app.get('/api', (req, res) => {
-  console.log('here')
-  res.send('hello world')
-})
+app.use('/api/shoppingitems', shoppingItemsRouter)
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/index.html'))
@@ -39,5 +37,5 @@ app.get('*', (req, res) => {
 
 // Serve the files on port 3002.
 app.listen(3005, () => {
-  console.log('Example app listening on port 3002!\n')
+  console.log('Example app listening on port 3005!\n')
 })

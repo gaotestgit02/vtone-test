@@ -1,28 +1,22 @@
 import { createSlice, configureStore, PayloadAction } from '@reduxjs/toolkit'
+import createSagaMiddleware from '@redux-saga/core'
 import { ShoppingItem } from './types'
+import { rootSaga } from './saga'
 
 interface ShoppingState {
   items: ShoppingItem[]
 }
-const testItem = {
-  id: 2,
-  description: 'Get Tomatoes',
-  name: 'Tomatoes',
-  purchased: false,
-  quantity: 2,
-}
+
 const initialShoppingSliceState: ShoppingState = {
-  items: [testItem],
+  items: [],
 }
 
 const shoppingSlice = createSlice({
   name: 'shopping',
   initialState: initialShoppingSliceState,
   reducers: {
-    fetchItems: (state, action) => {
-      return {
-        items: action.payload,
-      }
+    setShoppingItems: (state, action: PayloadAction<ShoppingItem[]>) => {
+      state.items = action.payload
     },
     addShoppingItem: (state, action: PayloadAction<ShoppingItem>) => {
       state.items.push(action.payload)
@@ -40,7 +34,7 @@ const shoppingSlice = createSlice({
         action.payload
       )
     },
-    togglePurchaseState: (state, action: PayloadAction<number>) => {
+    togglePurchaseState: (state, action: PayloadAction<string>) => {
       const item = state.items.find((item) => item.id === action.payload)
       if (item) {
         item.purchased = !item.purchased
@@ -70,15 +64,21 @@ const appStateSlice = createSlice({
   },
 })
 
+const sagaMiddleware = createSagaMiddleware()
+
 export const store = configureStore({
   reducer: {
     shopping: shoppingSlice.reducer,
     appState: appStateSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: false }).prepend(sagaMiddleware),
 })
 
+sagaMiddleware.run(rootSaga)
+
 export const {
-  fetchItems,
+  setShoppingItems,
   addShoppingItem,
   togglePurchaseState,
   deleteShoppingItem,

@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import React, { useState } from 'react'
 import { useAppDispatch } from '../state/reduxhooks'
-import { addShoppingItem, editShoppingItem } from '../state/store'
+import { sagaActions } from '../state/sagaActions'
 import { ShoppingItem } from '../state/types'
 
 interface AddEditDialogProps extends DialogProps {
@@ -30,8 +30,6 @@ const DEFAULT_SHOPPINGITEM: Partial<ShoppingItem> = {
   quantity: '',
   purchased: false,
 }
-
-let count = 1
 
 export const AddEditDailog = (props: AddEditDialogProps) => {
   const {
@@ -52,12 +50,14 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
   const saveHandler = () => {
     setHasError(false)
     const newShoppingItem = {
-      id: shoppingItem.id ?? count++,
+      id: shoppingItem?.id,
       name: itemName,
       description,
       quantity,
       purchased,
     }
+
+    console.log(newShoppingItem)
 
     if (
       newShoppingItem.name === '' ||
@@ -68,10 +68,18 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
       return
     }
 
+    // dispatch(
+    //   !shoppingItem.id
+    //     ? addShoppingItem(newShoppingItem)
+    //     : editShoppingItem(newShoppingItem)
+    // )
     dispatch(
       !shoppingItem.id
-        ? addShoppingItem(newShoppingItem)
-        : editShoppingItem(newShoppingItem)
+        ? { type: sagaActions.ADD_SHOPPING_ITEM, payload: newShoppingItem }
+        : {
+            type: sagaActions.EDIT_SHOPPING_ITEM,
+            payload: newShoppingItem,
+          }
     )
     closeDialogHandler()
   }
@@ -121,14 +129,12 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
             onChange={(evt) => setDescription(evt.target.value)}
           />
           <TextField
-            // {...(editMode && { ...{ defaultValue: shoppingItem.quantity } })}
             id="quantity"
             select
             label="How many?"
             sx={{ mt: 2 }}
             value={quantity}
             onChange={(evt) => {
-              console.log(evt)
               setQuantity(parseInt(evt.target.value))
             }}
           >
