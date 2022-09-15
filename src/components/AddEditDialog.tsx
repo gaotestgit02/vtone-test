@@ -57,8 +57,6 @@ export const AddEditDailog = (props: AddEditDialogProps) => {
       purchased,
     }
 
-    console.log(newShoppingItem)
-
     if (
       newShoppingItem.name === '' ||
       newShoppingItem.description === '' ||
